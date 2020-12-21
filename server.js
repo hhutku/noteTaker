@@ -1,12 +1,15 @@
+//imports dependecies
 var express = require("express");
 var path = require("path");
+//sets up express app
 var app = express();
+// serves static files
 app.use(express.static('public'))
 var fs = require("fs");
 const writeFile = fs.writeFileSync;
 var moment = require('moment');
 var PORT = process.env.PORT || 3000;
-
+// parses incoming requests
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
@@ -22,7 +25,7 @@ function idGenerate(time) {
 }
 
 
-
+ // reads the database parse the content and send to the client
 app.get("/api/notes", (req, res) => {
   fs.readFile('./db/db.json', 'utf8', (err, data) => {
     if (err) throw err;
@@ -31,7 +34,7 @@ app.get("/api/notes", (req, res) => {
   });
 
 })
-
+// add id to the note,push into array write to file and send to client
 app.post("/api/notes", (req, res) => {
   var time = moment().format();
   req.body.id = idGenerate(time);
@@ -46,7 +49,7 @@ app.post("/api/notes", (req, res) => {
 
   res.json(req.body);
 })
-
+// Deleting the notes using the id
 app.delete('/api/notes/:id', (req, res) => {
 
   const deletedId = req.params.id
@@ -61,6 +64,7 @@ app.delete('/api/notes/:id', (req, res) => {
   res.send("id no: " + deletedId + " deleted");
 
 })
+// getting the html files
 app.get("/notes", function (req, res) {
   res.sendFile(path.join(__dirname, "./public/notes.html"));
 });
@@ -68,6 +72,7 @@ app.get("/notes", function (req, res) {
 app.get("*", function (req, res) {
   res.sendFile(path.join(__dirname, "./public/index.html"));
 });
+//starts the server listening port
 app.listen(PORT, function () {
   console.log("App listening on PORT " + PORT);
 });
