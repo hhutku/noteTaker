@@ -3,8 +3,13 @@ var path = require("path");
 var app = express();
 app.use(express.static('public'))
 var fs = require("fs");
+const writeFile = fs.writeFileSync;
 var moment = require('moment');
 var PORT = process.env.PORT || 3000;
+
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
 
 function idGenerate(time) {
   var timeId = "";
@@ -15,20 +20,8 @@ function idGenerate(time) {
   }
   return timeId;
 }
-app.post("/api/notes", (req, res) => {
-  var time = moment().format();
-  req.body.id = idGenerate(time);
 
-  fs.readFile('./db/db.json', 'utf8', (err, data) => {
-    if (err) throw err;
-    data = JSON.parse(data);
-    data.push(req.body);
 
-    writeFile("./db/db.json", JSON.stringify(data));
-  });
-
-  res.json(req.body);
-})
 
 app.get("/api/notes", (req, res) => {
     fs.readFile('./db/db.json', 'utf8', (err, data) => {
@@ -39,6 +32,20 @@ app.get("/api/notes", (req, res) => {
   
   })
 
+  app.post("/api/notes", (req, res) => {
+    var time = moment().format();
+    req.body.id = idGenerate(time);
+  
+    fs.readFile('./db/db.json', 'utf8', (err, data) => {
+      if (err) throw err;
+      data = JSON.parse(data);
+      data.push(req.body);
+  
+      writeFile("./db/db.json", JSON.stringify(data));
+    });
+  
+    res.json(req.body);
+  })
 
   
 app.get("/notes", function (req, res) {
