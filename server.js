@@ -3,8 +3,21 @@ var path = require("path");
 var app = express();
 app.use(express.static('public'))
 var fs = require("fs");
+var moment = require('moment');
 var PORT = process.env.PORT || 3000;
 
+function idGenerate(time) {
+  var timeId = "";
+  for (i = 0; i < time.length; i++) {
+    if (!(time[i] == "-" || time[i] == ":")) {
+      timeId += time[i];
+    }
+  }
+  return timeId;
+}
+var time = moment().format();
+
+console.log(idGenerate(time))
 
 app.get("/api/notes", (req, res) => {
     fs.readFile('./db/db.json', 'utf8', (err, data) => {
