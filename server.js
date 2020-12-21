@@ -15,9 +15,20 @@ function idGenerate(time) {
   }
   return timeId;
 }
-var time = moment().format();
+app.post("/api/notes", (req, res) => {
+  var time = moment().format();
+  req.body.id = idGenerate(time);
 
-console.log(idGenerate(time))
+  fs.readFile('./db/db.json', 'utf8', (err, data) => {
+    if (err) throw err;
+    data = JSON.parse(data);
+    data.push(req.body);
+
+    writeFile("./db/db.json", JSON.stringify(data));
+  });
+
+  res.json(req.body);
+})
 
 app.get("/api/notes", (req, res) => {
     fs.readFile('./db/db.json', 'utf8', (err, data) => {
